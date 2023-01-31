@@ -11,14 +11,30 @@ public struct MeshData
 
 public class MarchingCube
 {
-    private int _vertexCount = 0;
-    public float surfaceLevel = 0.5f;
+    private int _vertexCount;
+    public float surfaceLevel;
     public int chunkSize;
     public float[] voxelMap;
 
-    public MeshData meshData;
+    private MeshData _meshData;
     
     private int[] _triangleOrder = {0, 1, 2};
+
+    public MarchingCube(int chunkSize, float[] voxelMap,float surfaceLevel = 0.5f)
+    {
+        this.chunkSize = chunkSize;
+        this.voxelMap = voxelMap;
+        this.surfaceLevel = surfaceLevel;
+        _meshData.vertices = new List<Vector3>();
+        _meshData.triangles = new List<int>();
+        _meshData.normals = new List<Vector3>();
+    }
+
+    public MeshData GetMeshData()
+    {
+        GenerateMesh();
+        return _meshData;
+    }
 
     void GenerateMesh()
     {
@@ -101,17 +117,17 @@ public class MarchingCube
             
             normal.Normalize();
 
-            meshData.vertices.Add(v1);
-            meshData.vertices.Add(v2);
-            meshData.vertices.Add(v3);
+            _meshData.vertices.Add(v1);
+            _meshData.vertices.Add(v2);
+            _meshData.vertices.Add(v3);
             
-            meshData.triangles.Add(_vertexCount + _triangleOrder[0]);            
-            meshData.triangles.Add(_vertexCount + _triangleOrder[1]);            
-            meshData.triangles.Add(_vertexCount + _triangleOrder[2]);
+            _meshData.triangles.Add(_vertexCount + _triangleOrder[0]);            
+            _meshData.triangles.Add(_vertexCount + _triangleOrder[1]);            
+            _meshData.triangles.Add(_vertexCount + _triangleOrder[2]);
             
-            meshData.normals.Add(normal);
-            meshData.normals.Add(normal);
-            meshData.normals.Add(normal);
+            _meshData.normals.Add(normal);
+            _meshData.normals.Add(normal);
+            _meshData.normals.Add(normal);
 
             _vertexCount += 3;
         }

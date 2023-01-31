@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class Chunk : MonoBehaviour
 {
-    public MeshRenderer meshRenderer;
     public MeshFilter meshFilter;
+    public MeshRenderer meshRenderer;
     private MarchingCube _marchingCube;
 
     public int chunkSize;
@@ -27,7 +27,7 @@ public class Chunk : MonoBehaviour
         mesh.vertices = meshData.vertices.ToArray();
         mesh.triangles = meshData.triangles.ToArray();
         mesh.normals = meshData.normals.ToArray();
-        
+
         mesh.RecalculateNormals();
         
         meshFilter.mesh = mesh;

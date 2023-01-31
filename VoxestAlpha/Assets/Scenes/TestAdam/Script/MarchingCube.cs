@@ -76,7 +76,7 @@ public class MarchingCube
 
     int GetIndex3D(int x, int y, int z)
     {
-        return y * (chunkSize + 1) * (chunkSize + 1) + z * (chunkSize + 1) + x;
+        return x * (chunkSize + 1) * (chunkSize + 1) + z * (chunkSize + 1) + y;
     }
 
     void March(int x,int y, int z, float[] cube)
@@ -100,8 +100,8 @@ public class MarchingCube
                 float offset = GetInterolationOffset(cube[_edgeConnection[i,0]],cube[_edgeConnection[i,1]]);
 
                 edgeVertex[i].x = x + (_vertexOffset[_edgeConnection[i, 0], 0] + offset * _edgeDirection[i, 0]);
-                edgeVertex[i].y = x + (_vertexOffset[_edgeConnection[i, 0], 1] + offset * _edgeDirection[i, 1]);
-                edgeVertex[i].z = x + (_vertexOffset[_edgeConnection[i, 0], 2] + offset * _edgeDirection[i, 2]);
+                edgeVertex[i].y = y + (_vertexOffset[_edgeConnection[i, 0], 1] + offset * _edgeDirection[i, 1]);
+                edgeVertex[i].z = z + (_vertexOffset[_edgeConnection[i, 0], 2] + offset * _edgeDirection[i, 2]);
             }
         }
 

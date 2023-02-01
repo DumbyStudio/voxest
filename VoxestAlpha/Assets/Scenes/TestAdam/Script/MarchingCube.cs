@@ -41,14 +41,14 @@ public class MarchingCube
         if (surfaceLevel > 0.0f)
         {
             _triangleOrder[0] = 0;
-            _triangleOrder[1] = 1;
-            _triangleOrder[2] = 2;
+            _triangleOrder[1] = 2;
+            _triangleOrder[2] = 1;
         }
         else
         {
             _triangleOrder[0] = 0;
-            _triangleOrder[1] = 2;
-            _triangleOrder[2] = 1;
+            _triangleOrder[1] = 1;
+            _triangleOrder[2] = 2;
         }
 
         float[] cube = new float[8];

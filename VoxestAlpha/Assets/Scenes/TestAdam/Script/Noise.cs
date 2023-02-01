@@ -11,7 +11,7 @@ public static class Noise
         float lacunarity, int planetSize, float amplificator)
     {
         float[] noiseMap = new float[(chunkSize + 1) * (chunkSize + 1) * (chunkSize + 1)];
-
+        
         float maxPossibleHeight = 0;
         float amplitude = 1;
         for (int i = 0; i < octaves; ++i)
@@ -19,12 +19,12 @@ public static class Noise
             maxPossibleHeight += amplitude;
             amplitude *= persistance;
         }
-
+        
         if (scale <= 0)
             scale = 0.0001f;
-
+        
         Vector3 planetOrigin = new Vector3(0,0,0);
-
+        
         int valueIndex = 0;
         for (int x = 0; x < chunkSize + 1; ++x)
         {

@@ -5,21 +5,26 @@ public class Chunk
     public MeshFilter meshFilter;
     public MeshRenderer meshRenderer;
     private MarchingCube _marchingCube;
+    public Material material;
 
     private GameObject _gameObject;  
 
     public ChunkManager chunkManager;
 
     public int chunkSize;
+    public int planetSize;
     public Vector3 chunkPos;
+    
     public float scale = 1;
     public int octaves = 3;
     public float lacunarity = 0.5f;
     public float persistance = 1.0f;
-    public int planetSize = 10;
-    public float amplificator = 2;
+    public float amplificator;
 
-    public Chunk(ChunkManager chunkManager, Vector3 chunkPos, int chunkSize, int planetSize)
+    private float[] _noiseMap;
+    private MeshData _meshData;
+
+    public Chunk(ChunkManager chunkManager, Vector3 chunkPos, int chunkSize, int planetSize, Material material,int amplificator)
     {
         this.chunkManager = chunkManager;
         _gameObject = new GameObject();
@@ -29,22 +34,39 @@ public class Chunk
         this.chunkSize = chunkSize;
         this.chunkPos = chunkPos;
         this.planetSize = planetSize;
+        this.material = material;
+        this.amplificator = amplificator;
 
         _gameObject.transform.position = this.chunkPos * chunkSize;
 
-        Start();
+        GenerateNoiseMap();
+        
+        ComputeChunk();
+        
+        RenderChunk();
     }
 
-    void Start()
+    void GenerateNoiseMap()
+    {
+        _noiseMap = Noise.GeneratePlanetMap(chunkSize,chunkPos,scale,octaves,persistance,lacunarity,planetSize,amplificator);
+    }
+
+    void ComputeChunk()
+    {
+        _marchingCube = new MarchingCube(chunkSize,_noiseMap);
+        _meshData = _marchingCube.GetMeshData();
+
+    }
+
+    void RenderChunk()
     {
         Mesh mesh = new Mesh();
-        float[] noiseMap = Noise.GeneratePlanetMap(chunkSize,chunkPos,scale,octaves,persistance,lacunarity,planetSize,amplificator);
-        _marchingCube = new MarchingCube(chunkSize,noiseMap);
-        MeshData meshData = _marchingCube.GetMeshData();
+        
+        mesh.vertices = _meshData.vertices.ToArray();
+        mesh.triangles = _meshData.triangles.ToArray();
+        mesh.normals = _meshData.normals.ToArray();
 
-        mesh.vertices = meshData.vertices.ToArray();
-        mesh.triangles = meshData.triangles.ToArray();
-        mesh.normals = meshData.normals.ToArray();
+        meshRenderer.material = material;
 
         mesh.RecalculateNormals();
 

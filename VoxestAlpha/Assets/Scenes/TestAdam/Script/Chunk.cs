@@ -3,6 +3,7 @@ using UnityEngine;
 public struct Voxel
 {
     public float density;
+    public float type;
 }
 
 public class Chunk
@@ -21,7 +22,7 @@ public class Chunk
 
     private NoiseParam _noiseParam;
 
-    private float[] _noiseMap;
+    private Voxel[] _noiseMap;
     private MeshData _meshData;
 
     public Chunk(ChunkManager chunkManager, Vector3 chunkPos, int chunkSize, Material material, NoiseParam noiseParam)

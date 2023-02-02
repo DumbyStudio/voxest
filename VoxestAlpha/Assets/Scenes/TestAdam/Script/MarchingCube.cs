@@ -14,7 +14,7 @@ public class MarchingCube
     private int _vertexCount;
     public float surfaceLevel;
     public int chunkSize;
-    public float[] voxelMap;
+    public Voxel[] voxelMap;
     
     private static Color[] _baseColor = {Color.red, Color.green,};
 
@@ -22,7 +22,7 @@ public class MarchingCube
     
     private int[] _triangleOrder = {0, 1, 2};
 
-    public MarchingCube(int chunkSize, float[] voxelMap,float surfaceLevel = 0.5f)
+    public MarchingCube(int chunkSize, Voxel[] voxelMap,float surfaceLevel = 0.5f)
     {
         this.chunkSize = chunkSize;
         this.voxelMap = voxelMap;
@@ -54,7 +54,7 @@ public class MarchingCube
             _triangleOrder[2] = 2;
         }
 
-        float[] cube = new float[8];
+        Voxel[] cube = new Voxel[8];
 
         for (int x = 0; x < chunkSize; x++)
         {
@@ -82,14 +82,14 @@ public class MarchingCube
         return x * (chunkSize + 1) * (chunkSize + 1) + z * (chunkSize + 1) + y;
     }
 
-    void March(int x,int y, int z, float[] cube)
+    void March(int x,int y, int z, Voxel[] cube)
     {
         int vertexMask = 0;
         Vector3[] edgeVertex = new Vector3[12];
 
         for (int i = 0; i < 8; i++)
         {
-            if (cube[i] <= surfaceLevel) vertexMask |= 1 << i;
+            if (cube[i].density <= surfaceLevel) vertexMask |= 1 << i;
         }
 
         int edgeMask = _cubeEdgeFlags[vertexMask];
@@ -100,7 +100,7 @@ public class MarchingCube
         {
             if ((edgeMask & 1 << i) != 0)
             {
-                float offset = GetInterolationOffset(cube[_edgeConnection[i,0]],cube[_edgeConnection[i,1]]);
+                float offset = GetInterolationOffset(cube[_edgeConnection[i,0]].density,cube[_edgeConnection[i,1]].density);
 
                 edgeVertex[i].x = x + (_vertexOffset[_edgeConnection[i, 0], 0] + offset * _edgeDirection[i, 0]);
                 edgeVertex[i].y = y + (_vertexOffset[_edgeConnection[i, 0], 1] + offset * _edgeDirection[i, 1]);
@@ -108,7 +108,7 @@ public class MarchingCube
             }
         }
 
-        Color color = cube[0] > surfaceLevel / 2 ? _baseColor[0] : _baseColor[1];
+        Color color = cube[0].type > 0.5f ? _baseColor[0] : _baseColor[1];
 
         for (int i = 0; i < 5; i++)
         {

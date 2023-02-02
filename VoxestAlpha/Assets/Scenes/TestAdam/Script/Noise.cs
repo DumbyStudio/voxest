@@ -31,9 +31,9 @@ public static class Noise
         Random.InitState(seed);
     }
 
-    public static float[] GeneratePlanetMap(int chunkSize, Vector3 chunkPos, NoiseParam noiseParam)
+    public static Voxel[] GeneratePlanetMap(int chunkSize, Vector3 chunkPos, NoiseParam noiseParam)
     {
-        float[] noiseMap = new float[(chunkSize + 1) * (chunkSize + 1) * (chunkSize + 1)];
+        Voxel[] noiseMap = new Voxel[(chunkSize + 1) * (chunkSize + 1) * (chunkSize + 1)];
         
         float maxPossibleHeight = 0.1f;
         float amplitude = 1;
@@ -90,13 +90,14 @@ public static class Noise
                             noiseParam.lacunarity,
                             noiseParam.octaves,
                             noiseParam.seed
-                            );
+                        );
                         
-                        noiseMap[valueIndex] = perlinValue;
+                        noiseMap[valueIndex].density = perlinValue;
+                        noiseMap[valueIndex].type = distance <= distanceMax * 0.95f ? 1 : 0;
                     }
                     else
                     {
-                        noiseMap[valueIndex] = 1;
+                        noiseMap[valueIndex].density = 1;
                     }
                     valueIndex++;
                 }

@@ -1,38 +1,43 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class ChunkManager : MonoBehaviour
 {
-    public int renderDistance = 2;
-    public int chunkSize = 20;
-    public int planetSize;
+    public int renderDistance = 3;
+    public int chunkSize = 50;
     public Material material;
     public int seed = 5;
     public List<Chunk> chunks;
 
-    public int amplificator = 3;
+    public bool determinePlanetSize = true;
+    public NoiseParam noiseParam;
+    
+    public float scale;
+    public int octaves;
+    public float lacunarity;
+    public float persistance;
+    public float amplificator;
+    public int planetSize;
 
     void Start()
     {
-        Noise.SetSeed(seed);
+        // Noise.SetSeed(seed);
         chunks = new List<Chunk>();
-        planetSize = Mathf.RoundToInt(renderDistance * chunkSize * 0.75f);
+        
+        noiseParam = new NoiseParam(scale, octaves, lacunarity, persistance, amplificator, planetSize, seed, renderDistance * chunkSize);
+        
+        if (determinePlanetSize)
+            noiseParam.planetSize = Mathf.RoundToInt(renderDistance * chunkSize * 0.9f);
+        
         for (int x = -renderDistance; x < renderDistance; x++)
         {
             for (int z = -renderDistance; z < renderDistance; z++)
             {
                 for (int y = -renderDistance; y < renderDistance; y++)
                 {
-                    chunks.Add(new Chunk(this, new Vector3(x,y,z),chunkSize,planetSize,material,amplificator));
+                    chunks.Add(new Chunk(this, new Vector3(x,y,z),chunkSize,material,noiseParam));
                 }
             }
         }
-    }
-
-    
-    void Update()
-    {
-        
     }
 }

@@ -1,5 +1,29 @@
 using UnityEngine;
 
+public struct NoiseParam
+{
+    public float scale;
+    public int octaves;
+    public float lacunarity;
+    public float persistance;
+    public float amplificator;
+    public int seed;
+    public int planetSize;
+    public int worldSize;
+
+    public NoiseParam(float scale,int octaves, float lacunarity, float persistance, float amplificator, int planetSize, int seed, int worldSize)
+    {
+        this.scale = scale <= 0 ? 0.0001f : scale;
+        this.octaves = octaves;
+        this.lacunarity = lacunarity;
+        this.persistance = persistance;
+        this.amplificator = amplificator;
+        this.planetSize = planetSize;
+        this.seed = seed;
+        this.worldSize = worldSize;
+    }
+}
+
 public static class Noise
 {
     public static void SetSeed(int seed)
@@ -7,77 +31,115 @@ public static class Noise
         Random.InitState(seed);
     }
 
-    public static float[] GeneratePlanetMap(int chunkSize, Vector3 chunkPos, float scale, int octaves, float persistance,
-        float lacunarity, int planetSize, float amplificator)
+    public static float[] GeneratePlanetMap(int chunkSize, Vector3 chunkPos, NoiseParam noiseParam)
     {
         float[] noiseMap = new float[(chunkSize + 1) * (chunkSize + 1) * (chunkSize + 1)];
         
-        float maxPossibleHeight = 0;
+        float maxPossibleHeight = 0.1f;
         float amplitude = 1;
-        for (int i = 0; i < octaves; ++i)
+        for (int i = 0; i < noiseParam.octaves; ++i)
         {
             maxPossibleHeight += amplitude;
-            amplitude *= persistance;
+            amplitude *= noiseParam.persistance;
         }
-        
-        if (scale <= 0)
-            scale = 0.0001f;
         
         Vector3 planetOrigin = new Vector3(0,0,0);
         
         int valueIndex = 0;
         for (int x = 0; x < chunkSize + 1; ++x)
         {
-            int globalX = (int) chunkPos.x * chunkSize + x;
+            float globalX = (int) chunkPos.x * chunkSize + x;
             for (int z = 0; z < chunkSize + 1; ++z)
             {
-                int globalZ = (int) chunkPos.z * chunkSize + z;
+                float globalZ = (int) chunkPos.z * chunkSize + z;
 			     
                 amplitude = 1;
                 float frequency = 1;
                 float noiseHeight = 0;
         
-                for (int i = 0; i < octaves; ++i)
+                for (int i = 0; i < noiseParam.octaves; ++i)
                 {
-                    float sampleX = globalX/ scale * frequency;
-                    float sampleZ = globalZ / scale * frequency;
+                    float sampleX = globalX/ noiseParam.scale * frequency;
+                    float sampleZ = globalZ / noiseParam.scale * frequency;
         
-                    float perlinValue = Mathf.PerlinNoise(sampleX, sampleZ) * -1;
+                    float perlinValue = Mathf.PerlinNoise(sampleX / noiseParam.worldSize, sampleZ / noiseParam.worldSize);
+                    
                     noiseHeight += perlinValue * amplitude;
-                    amplitude *= persistance;
-                    frequency *= lacunarity;
+                    amplitude *= noiseParam.persistance;
+                    frequency *= noiseParam.lacunarity;
                 }
 			     
                 float normalizedHeight = (noiseHeight + 1) / (2.0f * maxPossibleHeight);
-			     
-                float distanceMax = planetSize + normalizedHeight * amplificator;
+
+                float distanceMax = noiseParam.planetSize + normalizedHeight * noiseParam.amplificator;
         
                 for (int y = 0; y < chunkSize + 1; ++y)
                 {
-                    int globalY = (int) chunkPos.y * chunkSize + y;
+                    float globalY = (int) chunkPos.y * chunkSize + y;
                     Vector3 voxelPos = new Vector3(globalX,globalY,globalZ);
         
                     float distance = Vector3.Distance(planetOrigin,voxelPos);
-				    
-                    noiseMap[valueIndex] = distance <= distanceMax ? 0 : 1;
+
+                    if (distance <= distanceMax)
+                    {
+                        float perlinValue = Noise3D(
+                            globalX / noiseParam.worldSize,
+                            globalY / noiseParam.worldSize,
+                            globalZ / noiseParam.worldSize,
+                            frequency,
+                            noiseParam.lacunarity,
+                            noiseParam.octaves,
+                            noiseParam.seed
+                            );
+                        
+                        noiseMap[valueIndex] = perlinValue;
+                    }
+                    else
+                    {
+                        noiseMap[valueIndex] = 1;
+                    }
                     valueIndex++;
                 }
             }
         }
-
-        // int valueIndex = 0;
-        // for (int x = 0; x < chunkSize + 1; x++)
-        // {
-        //     for (int z = 0; z < chunkSize + 1; z++)
-        //     {
-        //         for (int y = 0; y < chunkSize + 1; y++)
-        //         {
-        //             noiseMap[valueIndex] = y <= chunkSize / 2 ? 0 : 1;
-        //             valueIndex++;
-        //         }
-        //     }
-        // }
         
         return noiseMap;
+    }
+    
+    public static float Noise3D(float x, float y, float z)
+    {
+        float noise1 = Mathf.PerlinNoise(x, y);
+        float noise2 = Mathf.PerlinNoise(x, z);
+        float noise3 = Mathf.PerlinNoise(y, z);
+        
+        // Debug.Log(noise1 + " " + noise2 + " " + noise3);
+        
+        return (noise1 + noise2 + noise3) / 3.0f;
+    }
+    
+    public static float Noise3D(float x, float y, float z, float frequency, float lacunarity, int octave, int seed)
+    {
+        float noise = 0.0f;
+
+        for (int i = 0; i < octave; ++i)
+        {
+            // Get all permutations of noise for each individual axis
+            float noiseXY = Mathf.PerlinNoise(x * frequency + seed, y * frequency + seed);
+            float noiseXZ = Mathf.PerlinNoise(x * frequency + seed, z * frequency + seed);
+            float noiseYZ = Mathf.PerlinNoise(y * frequency + seed, z * frequency + seed);
+
+            // Reverse of the permutations of noise for each individual axis
+            float noiseYX = Mathf.PerlinNoise(y * frequency + seed, x * frequency + seed);
+            float noiseZX = Mathf.PerlinNoise(z * frequency + seed, x * frequency + seed);
+            float noiseZY = Mathf.PerlinNoise(z * frequency + seed, y * frequency + seed);
+
+            // Use the average of the noise functions
+            noise += (noiseXY + noiseXZ + noiseYZ + noiseYX + noiseZX + noiseZY) / 6.0f;
+
+            frequency *= lacunarity;
+        }
+
+        // Use the average of all octaves
+        return noise / octave;
     }
 }

@@ -1,5 +1,10 @@
 using UnityEngine;
 
+public struct Voxel
+{
+    public float density;
+}
+
 public class Chunk
 {
     public MeshFilter meshFilter;
@@ -12,19 +17,14 @@ public class Chunk
     public ChunkManager chunkManager;
 
     public int chunkSize;
-    public int planetSize;
     public Vector3 chunkPos;
-    
-    public float scale = 1;
-    public int octaves = 3;
-    public float lacunarity = 0.5f;
-    public float persistance = 1.0f;
-    public float amplificator;
+
+    private NoiseParam _noiseParam;
 
     private float[] _noiseMap;
     private MeshData _meshData;
 
-    public Chunk(ChunkManager chunkManager, Vector3 chunkPos, int chunkSize, int planetSize, Material material,int amplificator)
+    public Chunk(ChunkManager chunkManager, Vector3 chunkPos, int chunkSize, Material material, NoiseParam noiseParam)
     {
         this.chunkManager = chunkManager;
         _gameObject = new GameObject();
@@ -33,9 +33,8 @@ public class Chunk
 
         this.chunkSize = chunkSize;
         this.chunkPos = chunkPos;
-        this.planetSize = planetSize;
+        _noiseParam = noiseParam;
         this.material = material;
-        this.amplificator = amplificator;
 
         _gameObject.transform.position = this.chunkPos * chunkSize;
 
@@ -48,7 +47,7 @@ public class Chunk
 
     void GenerateNoiseMap()
     {
-        _noiseMap = Noise.GeneratePlanetMap(chunkSize,chunkPos,scale,octaves,persistance,lacunarity,planetSize,amplificator);
+        _noiseMap = Noise.GeneratePlanetMap(chunkSize,chunkPos,_noiseParam);
     }
 
     void ComputeChunk()
@@ -65,6 +64,7 @@ public class Chunk
         mesh.vertices = _meshData.vertices.ToArray();
         mesh.triangles = _meshData.triangles.ToArray();
         mesh.normals = _meshData.normals.ToArray();
+        mesh.colors = _meshData.colors.ToArray();
 
         meshRenderer.material = material;
 

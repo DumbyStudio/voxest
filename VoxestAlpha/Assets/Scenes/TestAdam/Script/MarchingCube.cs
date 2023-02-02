@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,6 +6,7 @@ public struct MeshData
     public List<Vector3> vertices;
     public List<int> triangles;
     public List<Vector3> normals;
+    public List<Color> colors;
 }
 
 public class MarchingCube
@@ -15,6 +15,8 @@ public class MarchingCube
     public float surfaceLevel;
     public int chunkSize;
     public float[] voxelMap;
+    
+    private static Color[] _baseColor = {Color.red, Color.green,};
 
     private MeshData _meshData;
     
@@ -28,6 +30,7 @@ public class MarchingCube
         _meshData.vertices = new List<Vector3>();
         _meshData.triangles = new List<int>();
         _meshData.normals = new List<Vector3>();
+        _meshData.colors = new List<Color>();
     }
 
     public MeshData GetMeshData()
@@ -105,6 +108,8 @@ public class MarchingCube
             }
         }
 
+        Color color = cube[0] > surfaceLevel / 2 ? _baseColor[0] : _baseColor[1];
+
         for (int i = 0; i < 5; i++)
         {
             if (_triangleConnectionTable[vertexMask,3 * i] < 0) break;
@@ -114,7 +119,7 @@ public class MarchingCube
             Vector3 v3 = edgeVertex[_triangleConnectionTable[vertexMask, 3 * i + 2]];
             
             Vector3 normal = Vector3.Cross(v3 - v1, v2 - v1);
-            
+
             normal.Normalize();
 
             _meshData.vertices.Add(v1);
@@ -128,6 +133,10 @@ public class MarchingCube
             _meshData.normals.Add(normal);
             _meshData.normals.Add(normal);
             _meshData.normals.Add(normal);
+
+            _meshData.colors.Add(color);
+            _meshData.colors.Add(color);
+            _meshData.colors.Add(color);
 
             _vertexCount += 3;
         }

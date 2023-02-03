@@ -9,7 +9,6 @@ public class ChunkManager : MonoBehaviour
     public int seed = 5;
     public List<Chunk> chunks;
 
-    public bool determinePlanetSize = true;
     public NoiseParam noiseParam;
     
     public float scale;
@@ -18,16 +17,14 @@ public class ChunkManager : MonoBehaviour
     public float persistance;
     public float amplificator;
     public int planetSize;
+    public Vector3 planetOrigin;
 
     void Start()
     {
-        // Noise.SetSeed(seed);
+        Noise.SetSeed(seed);
         chunks = new List<Chunk>();
         
         noiseParam = new NoiseParam(scale, octaves, lacunarity, persistance, amplificator, planetSize, seed, renderDistance * chunkSize);
-        
-        if (determinePlanetSize)
-            noiseParam.planetSize = Mathf.RoundToInt(renderDistance * chunkSize * 0.9f);
         
         for (int x = -renderDistance; x < renderDistance; x++)
         {
@@ -35,7 +32,7 @@ public class ChunkManager : MonoBehaviour
             {
                 for (int y = -renderDistance; y < renderDistance; y++)
                 {
-                    chunks.Add(new Chunk(this, new Vector3(x,y,z),chunkSize,material,noiseParam));
+                    chunks.Add(new Chunk(this, new Vector3(x,y,z),chunkSize,material,noiseParam,planetOrigin));
                 }
             }
         }

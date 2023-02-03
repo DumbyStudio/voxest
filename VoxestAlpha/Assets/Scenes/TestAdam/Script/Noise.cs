@@ -31,7 +31,7 @@ public static class Noise
         Random.InitState(seed);
     }
 
-    public static Voxel[] GeneratePlanetMap(int chunkSize, Vector3 chunkPos, NoiseParam noiseParam)
+    public static Voxel[] GeneratePlanetMap(int chunkSize, Vector3 chunkPos, Vector3 planetOrigin, NoiseParam noiseParam)
     {
         Voxel[] noiseMap = new Voxel[(chunkSize + 1) * (chunkSize + 1) * (chunkSize + 1)];
         
@@ -42,8 +42,6 @@ public static class Noise
             maxPossibleHeight += amplitude;
             amplitude *= noiseParam.persistance;
         }
-        
-        Vector3 planetOrigin = new Vector3(0,0,0);
         
         int valueIndex = 0;
         for (int x = 0; x < chunkSize + 1; ++x)
@@ -105,17 +103,6 @@ public static class Noise
         }
         
         return noiseMap;
-    }
-    
-    public static float Noise3D(float x, float y, float z)
-    {
-        float noise1 = Mathf.PerlinNoise(x, y);
-        float noise2 = Mathf.PerlinNoise(x, z);
-        float noise3 = Mathf.PerlinNoise(y, z);
-        
-        // Debug.Log(noise1 + " " + noise2 + " " + noise3);
-        
-        return (noise1 + noise2 + noise3) / 3.0f;
     }
     
     public static float Noise3D(float x, float y, float z, float frequency, float lacunarity, int octave, int seed)

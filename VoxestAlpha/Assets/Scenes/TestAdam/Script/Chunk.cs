@@ -21,11 +21,12 @@ public class Chunk
     public Vector3 chunkPos;
 
     private NoiseParam _noiseParam;
+    private Vector3 _planetOrigin;
 
     private Voxel[] _noiseMap;
     private MeshData _meshData;
 
-    public Chunk(ChunkManager chunkManager, Vector3 chunkPos, int chunkSize, Material material, NoiseParam noiseParam)
+    public Chunk(ChunkManager chunkManager, Vector3 chunkPos, int chunkSize, Material material, NoiseParam noiseParam, Vector3 planetOrigin)
     {
         this.chunkManager = chunkManager;
         _gameObject = new GameObject();
@@ -35,6 +36,7 @@ public class Chunk
         this.chunkSize = chunkSize;
         this.chunkPos = chunkPos;
         _noiseParam = noiseParam;
+        _planetOrigin = planetOrigin;
         this.material = material;
 
         _gameObject.transform.position = this.chunkPos * chunkSize;
@@ -48,7 +50,7 @@ public class Chunk
 
     void GenerateNoiseMap()
     {
-        _noiseMap = Noise.GeneratePlanetMap(chunkSize,chunkPos,_noiseParam);
+        _noiseMap = Noise.GeneratePlanetMap(chunkSize,chunkPos,_planetOrigin,_noiseParam);
     }
 
     void ComputeChunk()

@@ -4,29 +4,31 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    private Rigidbody myRigidbody;
+    private Rigidbody rigidbody;
+    [SerializeField] private GameObject directionControllerObject;
 
     [SerializeField] private float speed = 1.0f;
     [SerializeField] private float distToGround;
     [SerializeField] private bool grounded = false;
 
     [SerializeField] private Vector3 vectorAvancer;
+    [SerializeField] private Vector3 smoothMoveVelocity;
 
     void Start()
     {
-        myRigidbody = this.GetComponent<Rigidbody>();
+        rigidbody = this.GetComponent<Rigidbody>();
         distToGround = this.GetComponent<CapsuleCollider>().bounds.extents.y;
     }
 
     void Update()
     {
-        vectorAvancer = transform.rotation * Vector3.forward * speed * Time.deltaTime + transform.position;
-        if(grounded = isGrounded())
-            myRigidbody.MovePosition(vectorAvancer);
+        Vector3 targetVectorAvancer = new Vector3(1,0,0) * speed;
+        vectorAvancer = Vector3.SmoothDamp(vectorAvancer, targetVectorAvancer, ref smoothMoveVelocity, .15f);
+
     }
 
-    bool isGrounded()
+    void FixedUpdate()
     {
-        return Physics.Raycast(transform.position, transform.rotation * Vector3.down, distToGround + 0.1f);
+        rigidbody.MovePosition(rigidbody.position + transform.TransformDirection(vectorAvancer) * Time.fixedDeltaTime);
     }
 }

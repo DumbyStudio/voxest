@@ -5,4 +5,13 @@ using UnityEngine;
 public class Orbitable : MonoBehaviour
 {
     public float gravity = 9.81f;
+
+    public void Attract(Transform body)
+    {
+        Vector3 targetDir = (body.position - transform.position).normalized;
+        Vector3 bodyUp = body.up;
+
+        body.rotation = Quaternion.FromToRotation(bodyUp, targetDir) * body.rotation;
+        body.GetComponent<Rigidbody>().AddForce(-targetDir * gravity);
+    }
 }

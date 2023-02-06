@@ -20,13 +20,15 @@ public class Chunk
     public int chunkSize;
     public Vector3 chunkPos;
 
-    private NoiseParam _noiseParam;
+    private NoiseParam _floorParam;
+    private NoiseParam _caveParam;
     private Vector3 _planetOrigin;
+    private bool _isInterpolate;
 
     private Voxel[] _noiseMap;
     private MeshData _meshData;
 
-    public Chunk(ChunkManager chunkManager, Vector3 chunkPos, int chunkSize, Material material, NoiseParam noiseParam, Vector3 planetOrigin)
+    public Chunk(ChunkManager chunkManager, Vector3 chunkPos, int chunkSize, Material material, NoiseParam floorParam,NoiseParam caveParam, Vector3 planetOrigin, bool isInterpolate)
     {
         this.chunkManager = chunkManager;
         _gameObject = new GameObject();
@@ -35,9 +37,11 @@ public class Chunk
 
         this.chunkSize = chunkSize;
         this.chunkPos = chunkPos;
-        _noiseParam = noiseParam;
+        _floorParam = floorParam;
+        _caveParam = caveParam;
         _planetOrigin = planetOrigin;
         this.material = material;
+        _isInterpolate = isInterpolate;
 
         _gameObject.transform.position = this.chunkPos * chunkSize;
 
@@ -50,12 +54,12 @@ public class Chunk
 
     void GenerateNoiseMap()
     {
-        _noiseMap = Noise.GeneratePlanetMap(chunkSize,chunkPos,_planetOrigin,_noiseParam);
+        _noiseMap = Noise.GeneratePlanetMap(chunkSize,chunkPos,_planetOrigin,_floorParam,_caveParam);
     }
 
     void ComputeChunk()
     {
-        _marchingCube = new MarchingCube(chunkSize,_noiseMap);
+        _marchingCube = new MarchingCube(chunkSize,_noiseMap,_isInterpolate);
         _meshData = _marchingCube.GetMeshData();
 
     }

@@ -16,17 +16,20 @@ public class MarchingCube
     public int chunkSize;
     public Voxel[] voxelMap;
     
+    private bool _isInterpolate;
+    
     private static Color[] _baseColor = {Color.red, Color.green,};
 
     private MeshData _meshData;
     
     private int[] _triangleOrder = {0, 1, 2};
 
-    public MarchingCube(int chunkSize, Voxel[] voxelMap,float surfaceLevel = 0.5f)
+    public MarchingCube(int chunkSize, Voxel[] voxelMap, bool isInterpolate,float surfaceLevel = 0.5f)
     {
         this.chunkSize = chunkSize;
         this.voxelMap = voxelMap;
         this.surfaceLevel = surfaceLevel;
+        _isInterpolate = isInterpolate;
         _meshData.vertices = new List<Vector3>();
         _meshData.triangles = new List<int>();
         _meshData.normals = new List<Vector3>();
@@ -100,7 +103,9 @@ public class MarchingCube
         {
             if ((edgeMask & 1 << i) != 0)
             {
-                float offset = GetInterolationOffset(cube[_edgeConnection[i,0]].density,cube[_edgeConnection[i,1]].density);
+                float offset = _isInterpolate ? 
+                    GetInterolationOffset(cube[_edgeConnection[i,0]].density,cube[_edgeConnection[i,1]].density) 
+                    : 0.5f;
 
                 edgeVertex[i].x = x + (_vertexOffset[_edgeConnection[i, 0], 0] + offset * _edgeDirection[i, 0]);
                 edgeVertex[i].y = y + (_vertexOffset[_edgeConnection[i, 0], 1] + offset * _edgeDirection[i, 1]);

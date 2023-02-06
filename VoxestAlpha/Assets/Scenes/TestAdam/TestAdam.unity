@@ -200,14 +200,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 537746123}
-  m_LocalRotation: {x: 0.27781588, y: 0.36497167, z: -0.1150751, w: 0.8811196}
-  m_LocalPosition: {x: -50, y: 50, z: -50}
+  m_LocalRotation: {x: 0.31598538, y: 0.3596048, z: -0.13088542, w: 0.8681629}
+  m_LocalPosition: {x: -50, y: 25, z: -50}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 35, y: 45, z: 0}
+  m_LocalEulerAnglesHint: {x: 40, y: 45, z: 0}
 --- !u!114 &537746127
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -385,17 +385,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37f10f695a8aa9445b965312542ee079, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  renderDistance: 1
-  chunkSize: 10
+  renderDistance: 5
+  chunkSize: 20
   material: {fileID: 2100000, guid: 01b1ecb91f4f3114fb5e253ad6eb24e9, type: 2}
   seed: 5
-  determinePlanetSize: 1
-  scale: 1
-  octaves: 3
-  lacunarity: 2
-  persistance: 2
-  amplificator: 3
-  planetSize: 0
+  isInterpolate: 1
+  floorParam:
+    scale: 100
+    octaves: 3
+    lacunarity: 2
+    persistance: 2
+    amplificator: 1
+    planetSize: 2000
+  caveParam:
+    scale: 100
+    octaves: 2
+    lacunarity: 2.5
+    persistance: 0.9
+    amplificator: 2
+    planetSize: 2000
+  planetOrigin: {x: 0, y: -2000, z: 0}
 --- !u!4 &1983331638
 Transform:
   m_ObjectHideFlags: 0

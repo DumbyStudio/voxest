@@ -23,25 +23,25 @@ public class Chunk
     private NoiseParam _floorParam;
     private NoiseParam _caveParam;
     private Vector3 _planetOrigin;
-    private bool _isInterpolate;
 
     private Voxel[] _noiseMap;
     private MeshData _meshData;
 
-    public Chunk(ChunkManager chunkManager, Vector3 chunkPos, int chunkSize, Material material, NoiseParam floorParam,NoiseParam caveParam, Vector3 planetOrigin, bool isInterpolate)
+    public Chunk(ChunkManager chunkManager, Vector3 chunkPos, int chunkSize, Material material, NoiseParam floorParam,NoiseParam caveParam, Vector3 planetOrigin, bool isInterpolate, float surfaceLevel = 0.5f)
     {
         this.chunkManager = chunkManager;
-        _gameObject = new GameObject();
-        meshFilter = _gameObject.AddComponent<MeshFilter>();
-        meshRenderer = _gameObject.AddComponent<MeshRenderer>();
-
         this.chunkSize = chunkSize;
         this.chunkPos = chunkPos;
         _floorParam = floorParam;
         _caveParam = caveParam;
         _planetOrigin = planetOrigin;
         this.material = material;
-        _isInterpolate = isInterpolate;
+        
+        _gameObject = new GameObject();
+        meshFilter = _gameObject.AddComponent<MeshFilter>();
+        meshRenderer = _gameObject.AddComponent<MeshRenderer>();
+        _marchingCube = new MarchingCube(chunkSize,isInterpolate,surfaceLevel);
+
 
         _gameObject.transform.position = this.chunkPos * chunkSize;
 
@@ -59,9 +59,7 @@ public class Chunk
 
     void ComputeChunk()
     {
-        _marchingCube = new MarchingCube(chunkSize,_noiseMap,_isInterpolate);
-        _meshData = _marchingCube.GetMeshData();
-
+        _meshData = _marchingCube.GetMeshData(_noiseMap);
     }
 
     void RenderChunk()

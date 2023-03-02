@@ -385,8 +385,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37f10f695a8aa9445b965312542ee079, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  fullPlanet: 1
   renderDistance: 5
   chunkSize: 20
+  surfaceLevel: 0.5
   material: {fileID: 2100000, guid: 01b1ecb91f4f3114fb5e253ad6eb24e9, type: 2}
   seed: 5
   isInterpolate: 1
@@ -396,15 +398,15 @@ MonoBehaviour:
     lacunarity: 2
     persistance: 2
     amplificator: 1
-    planetSize: 2000
+    planetSize: 20
   caveParam:
-    scale: 100
-    octaves: 2
-    lacunarity: 2.5
-    persistance: 0.9
-    amplificator: 2
-    planetSize: 2000
-  planetOrigin: {x: 0, y: -2000, z: 0}
+    scale: 50
+    octaves: 5
+    lacunarity: 0.001
+    persistance: 0.001
+    amplificator: 1
+    planetSize: 45
+  planetOrigin: {x: 0, y: 0, z: 0}
 --- !u!4 &1983331638
 Transform:
   m_ObjectHideFlags: 0

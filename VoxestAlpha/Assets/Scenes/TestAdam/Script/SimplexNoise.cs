@@ -14,7 +14,7 @@ public static class SimplexNoise {
 		}
 		set {
 			seed_ = value;
-			UnityEngine.Random.seed = value;
+			UnityEngine.Random.InitState(value);
 			SetupNoise();
 		}
 	}

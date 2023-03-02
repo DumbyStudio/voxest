@@ -3,8 +3,10 @@ using UnityEngine;
 
 public class ChunkManager : MonoBehaviour
 {
+    public bool fullPlanet = false;
     public int renderDistance = 3;
     public int chunkSize = 50;
+    public float surfaceLevel = 0.5f;
     public Material material;
     public int seed = 5;
     public List<Chunk> chunks;
@@ -19,6 +21,13 @@ public class ChunkManager : MonoBehaviour
     {
         Noise.SetSeed(seed);
         chunks = new List<Chunk>();
+
+        if (fullPlanet)
+        {
+            planetOrigin = Vector3.zero;
+            floorParam.planetSize = renderDistance * chunkSize - renderDistance;
+            caveParam.planetSize = renderDistance * chunkSize - renderDistance;
+        }
         
         for (int x = -renderDistance; x < renderDistance; x++)
         {
@@ -26,7 +35,7 @@ public class ChunkManager : MonoBehaviour
             {
                 for (int y = -renderDistance; y < renderDistance; y++)
                 {
-                    chunks.Add(new Chunk(this, new Vector3(x,y,z),chunkSize,material,floorParam,caveParam,planetOrigin,isInterpolate));
+                    chunks.Add(new Chunk(this, new Vector3(x,y,z),chunkSize,material,floorParam,caveParam,planetOrigin,isInterpolate,surfaceLevel));
                 }
             }
         }

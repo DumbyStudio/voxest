@@ -25,8 +25,8 @@ public class ChunkManager : MonoBehaviour
         if (fullPlanet)
         {
             planetOrigin = Vector3.zero;
-            floorParam.planetSize = renderDistance * chunkSize - renderDistance;
-            caveParam.planetSize = renderDistance * chunkSize - renderDistance;
+            floorParam.planetSize = renderDistance * chunkSize - renderDistance * 2;
+            caveParam.planetSize = renderDistance * chunkSize - renderDistance * 2;
         }
         
         for (int x = -renderDistance; x < renderDistance; x++)

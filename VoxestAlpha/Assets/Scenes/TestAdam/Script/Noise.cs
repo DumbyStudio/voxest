@@ -52,10 +52,10 @@ public static class Noise
                     float perlinValue = 1;
                     float distance = Vector3.Distance(planetOrigin,voxelPos);
 
-                    if (distance <= distanceMax + 10)
+                    if (distance <= distanceMax + 5)
                     {
                         perlinValue = Noise3D(globalX, globalY, globalZ, caveParam);
-                        if (distance > distanceMax)
+                        if (distance >= distanceMax && perlinValue <= 0.5f)
                         {
                             float distanceFromFloor = distance - distanceMax;
                             perlinValue *= distanceFromFloor;

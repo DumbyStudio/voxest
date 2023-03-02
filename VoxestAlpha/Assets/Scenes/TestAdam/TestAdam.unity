@@ -393,11 +393,11 @@ MonoBehaviour:
   seed: 5
   isInterpolate: 1
   floorParam:
-    scale: 100
+    scale: 5
     octaves: 3
     lacunarity: 2
-    persistance: 2
-    amplificator: 1
+    persistance: 0.05
+    amplificator: 3
     planetSize: 20
   caveParam:
     scale: 50

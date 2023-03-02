@@ -48,13 +48,22 @@ public static class Noise
                 {
                     float globalY = (int) chunkPos.y * chunkSize + y;
                     Vector3 voxelPos = new Vector3(globalX,globalY,globalZ);
-        
-                    float distance = Vector3.Distance(planetOrigin,voxelPos) / distanceMax;
 
-                    float perlinValue = Noise3D(globalX, globalY, globalZ, caveParam);
+                    float perlinValue = 1;
+                    float distance = Vector3.Distance(planetOrigin,voxelPos);
+
+                    if (distance <= distanceMax + 10)
+                    {
+                        perlinValue = Noise3D(globalX, globalY, globalZ, caveParam);
+                        if (distance > distanceMax)
+                        {
+                            float distanceFromFloor = distance - distanceMax;
+                            perlinValue *= distanceFromFloor;
+                        }
+                    }
                     
-                    noiseMap[valueIndex].density = distance < 1 ? perlinValue : 1;
-                    noiseMap[valueIndex].type = distance;
+                    noiseMap[valueIndex].density = perlinValue;
+                    noiseMap[valueIndex].type = distance / distanceMax;
                     
                     valueIndex++;
                 }

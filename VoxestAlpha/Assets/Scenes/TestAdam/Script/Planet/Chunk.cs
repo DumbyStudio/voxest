@@ -10,6 +10,7 @@ public class Chunk
 {
     public MeshFilter meshFilter;
     public MeshRenderer meshRenderer;
+    public MeshCollider meshCollider;
     private MarchingCube _marchingCube;
     public Material material;
 
@@ -40,6 +41,7 @@ public class Chunk
         _gameObject = new GameObject();
         meshFilter = _gameObject.AddComponent<MeshFilter>();
         meshRenderer = _gameObject.AddComponent<MeshRenderer>();
+        meshCollider = _gameObject.AddComponent<MeshCollider>();
         _marchingCube = new MarchingCube(chunkSize,isInterpolate,surfaceLevel);
 
 
@@ -76,5 +78,6 @@ public class Chunk
         mesh.RecalculateNormals();
 
         meshFilter.mesh = mesh;
+        meshCollider.sharedMesh = mesh;
     }
 }

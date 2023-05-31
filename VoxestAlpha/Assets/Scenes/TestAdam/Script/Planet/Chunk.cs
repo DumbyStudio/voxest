@@ -10,6 +10,7 @@ public class Chunk
 {
     public MeshFilter meshFilter;
     public MeshRenderer meshRenderer;
+    public MeshCollider meshCollider;
     private MarchingCube _marchingCube;
     public Material material;
 
@@ -20,24 +21,29 @@ public class Chunk
     public int chunkSize;
     public Vector3 chunkPos;
 
-    private NoiseParam _noiseParam;
+    private NoiseParam _floorParam;
+    private NoiseParam _caveParam;
     private Vector3 _planetOrigin;
 
     private Voxel[] _noiseMap;
     private MeshData _meshData;
 
-    public Chunk(ChunkManager chunkManager, Vector3 chunkPos, int chunkSize, Material material, NoiseParam noiseParam, Vector3 planetOrigin)
+    public Chunk(ChunkManager chunkManager, Vector3 chunkPos, int chunkSize, Material material, NoiseParam floorParam,NoiseParam caveParam, Vector3 planetOrigin, bool isInterpolate, float surfaceLevel = 0.5f)
     {
         this.chunkManager = chunkManager;
+        this.chunkSize = chunkSize;
+        this.chunkPos = chunkPos;
+        _floorParam = floorParam;
+        _caveParam = caveParam;
+        _planetOrigin = planetOrigin;
+        this.material = material;
+        
         _gameObject = new GameObject();
         meshFilter = _gameObject.AddComponent<MeshFilter>();
         meshRenderer = _gameObject.AddComponent<MeshRenderer>();
+        meshCollider = _gameObject.AddComponent<MeshCollider>();
+        _marchingCube = new MarchingCube(chunkSize,isInterpolate,surfaceLevel);
 
-        this.chunkSize = chunkSize;
-        this.chunkPos = chunkPos;
-        _noiseParam = noiseParam;
-        _planetOrigin = planetOrigin;
-        this.material = material;
 
         _gameObject.transform.position = this.chunkPos * chunkSize;
 
@@ -50,14 +56,12 @@ public class Chunk
 
     void GenerateNoiseMap()
     {
-        _noiseMap = Noise.GeneratePlanetMap(chunkSize,chunkPos,_planetOrigin,_noiseParam);
+        _noiseMap = Noise.GeneratePlanetMap(chunkSize,chunkPos,_planetOrigin,_floorParam,_caveParam);
     }
 
     void ComputeChunk()
     {
-        _marchingCube = new MarchingCube(chunkSize,_noiseMap);
-        _meshData = _marchingCube.GetMeshData();
-
+        _meshData = _marchingCube.GetMeshData(_noiseMap);
     }
 
     void RenderChunk()
@@ -74,5 +78,6 @@ public class Chunk
         mesh.RecalculateNormals();
 
         meshFilter.mesh = mesh;
+        meshCollider.sharedMesh = mesh;
     }
 }

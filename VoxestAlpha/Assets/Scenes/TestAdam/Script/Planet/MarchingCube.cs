@@ -16,25 +16,28 @@ public class MarchingCube
     public int chunkSize;
     public Voxel[] voxelMap;
     
-    private static Color[] _baseColor = {Color.red, Color.green,};
+    private bool _isInterpolate;
+    
+    private static Color[] _baseColor = {Color.red, Color.blue,};
 
     private MeshData _meshData;
     
     private int[] _triangleOrder = {0, 1, 2};
 
-    public MarchingCube(int chunkSize, Voxel[] voxelMap,float surfaceLevel = 0.5f)
+    public MarchingCube(int chunkSize, bool isInterpolate,float surfaceLevel = 0.5f)
     {
         this.chunkSize = chunkSize;
-        this.voxelMap = voxelMap;
         this.surfaceLevel = surfaceLevel;
+        _isInterpolate = isInterpolate;
         _meshData.vertices = new List<Vector3>();
         _meshData.triangles = new List<int>();
         _meshData.normals = new List<Vector3>();
         _meshData.colors = new List<Color>();
     }
 
-    public MeshData GetMeshData()
+    public MeshData GetMeshData(Voxel[] inVoxelMap)
     {
+        voxelMap = inVoxelMap;
         GenerateMesh();
         return _meshData;
     }
@@ -100,7 +103,9 @@ public class MarchingCube
         {
             if ((edgeMask & 1 << i) != 0)
             {
-                float offset = GetInterolationOffset(cube[_edgeConnection[i,0]].density,cube[_edgeConnection[i,1]].density);
+                float offset = _isInterpolate ? 
+                    GetInterolationOffset(cube[_edgeConnection[i,0]].density,cube[_edgeConnection[i,1]].density) 
+                    : 0.5f;
 
                 edgeVertex[i].x = x + (_vertexOffset[_edgeConnection[i, 0], 0] + offset * _edgeDirection[i, 0]);
                 edgeVertex[i].y = y + (_vertexOffset[_edgeConnection[i, 0], 1] + offset * _edgeDirection[i, 1]);
@@ -108,7 +113,7 @@ public class MarchingCube
             }
         }
 
-        Color color = cube[0].type > 0.5f ? _baseColor[0] : _baseColor[1];
+        Color color = Color.Lerp(_baseColor[0], _baseColor[1], cube[0].type);
 
         for (int i = 0; i < 5; i++)
         {
